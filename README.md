@@ -1,2 +1,3 @@
 Umm yes meteor client addon 21.8
 build yourself pls
+common uses for Autoswap on hit could be Sword Maceswap or conserving durability on tools (WIP)
