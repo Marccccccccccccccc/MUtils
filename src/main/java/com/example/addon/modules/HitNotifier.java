@@ -1,13 +1,16 @@
 package com.example.addon.modules;
 
 import com.example.addon.AddonTemplate;
+import meteordevelopment.meteorclient.events.entity.player.StartBreakingBlockEvent;
 import meteordevelopment.meteorclient.events.entity.player.AttackEntityEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
+import meteordevelopment.meteorclient.events.entity.player.AttackEntityEvent;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -57,6 +60,18 @@ public class HitNotifier extends Module {
     @EventHandler
     private void onAttack(AttackEntityEvent event) {
         if (mc.player == null || event.entity == null) return;
+        handleSwap();
+    }
+    @EventHandler
+    private void onBlockBreak(StartBreakingBlockEvent event) {
+        ///if (mc.player == null || event.getClass().getName() == null) return;
+        ChatUtils.sendMsg(Text.of("block broken"));
+        handleSwap();
+    }
+
+
+    private void handleSwap() {
+        ///if (mc.player == null ||  == null) return;
 
         // Save original selected slot (capture final for lambda/queue)
         final int originalSlot = mc.player.getInventory().getSelectedSlot();
