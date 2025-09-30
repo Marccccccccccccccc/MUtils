@@ -6,10 +6,8 @@ import meteordevelopment.meteorclient.events.entity.player.AttackEntityEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.text.Text;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,7 +39,7 @@ public class HitNotifier extends Module {
     // Delay in ticks before swapping back
     private final Setting<Integer> delayTicks = sgGeneral.add(new IntSetting.Builder()
         .name("delay-ticks")
-        .description("Ticks to wait before swapping back (1 tick ~ 50 ms).")
+        .description("Ticks to wait before swapping back.")
         .defaultValue(1)
         .min(1)
         .max(20)
@@ -53,18 +51,17 @@ public class HitNotifier extends Module {
     private final List<ScheduledSwap> scheduled = new LinkedList<>();
 
     public HitNotifier() {
-        super(AddonTemplate.CATEGORY, "autoswap-on-hit", "Swaps to a configured hotbar slot when you hit an entity, and optionally swaps back.");
+        super(AddonTemplate.CATEGORY, "Attribute Swap", "Swaps to a configured hotbar slot when you hit an entity, and optionally swaps back.");
     }
 
     @EventHandler
     private void onAttack(AttackEntityEvent event) {
-        if (mc.player == null || event.entity == null) return;
+        ///if (mc.player == null || event.entity == null) return;
         handleSwap();
     }
     @EventHandler
     private void onBlockBreak(StartBreakingBlockEvent event) {
         ///if (mc.player == null || event.getClass().getName() == null) return;
-        ChatUtils.sendMsg(Text.of("block broken"));
         handleSwap();
     }
 
