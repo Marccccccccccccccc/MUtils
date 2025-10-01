@@ -1,6 +1,6 @@
 package com.example.addon.modules;
 
-import com.example.addon.AddonTemplate;
+import com.example.addon.MUtils;
 import meteordevelopment.meteorclient.events.entity.player.StartBreakingBlockEvent;
 import meteordevelopment.meteorclient.events.entity.player.AttackEntityEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -51,7 +51,7 @@ public class HitNotifier extends Module {
     private final List<ScheduledSwap> scheduled = new LinkedList<>();
 
     public HitNotifier() {
-        super(AddonTemplate.CATEGORY, "Attribute Swap", "Swaps to a configured hotbar slot when you hit an entity, and optionally swaps back.");
+        super(MUtils.CATEGORY, "Attribute Swap", "Swaps to a configured hotbar slot when you hit an entity, and optionally swaps back.");
     }
 
     @EventHandler
@@ -70,7 +70,7 @@ public class HitNotifier extends Module {
         ///if (mc.player == null ||  == null) return;
 
         // Save original selected slot (capture final for lambda/queue)
-        final int originalSlot = mc.player.getInventory().getSelectedSlot();
+        final int originalSlot = mc.player.getInventory().getSelectedSlot(); ///Fix Possible NullPointerException
         final int target = swapSlot.get();
 
         // If target is same as original, do nothing

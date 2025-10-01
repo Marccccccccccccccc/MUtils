@@ -1,6 +1,6 @@
 package com.example.addon.modules;
 
-import com.example.addon.AddonTemplate;
+import com.example.addon.MUtils;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import net.minecraft.item.ItemStack;
@@ -9,11 +9,9 @@ import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.settings.IntSetting;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
 
 public class EmptySlot extends Module {
     private int delayTicks = -1;
@@ -81,6 +79,6 @@ public class EmptySlot extends Module {
 
 
     public EmptySlot() {
-        super(AddonTemplate.CATEGORY, "EmptySlot", "Keeps a specific slot empty by dropping items in it.");
+        super(MUtils.CATEGORY, "EmptySlot", "Keeps a specific slot empty by dropping items in it.");
     }
 }
