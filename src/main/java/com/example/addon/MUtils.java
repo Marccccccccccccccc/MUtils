@@ -2,6 +2,7 @@ package com.example.addon;
 
 import com.example.addon.commands.CommandExample;
 import com.example.addon.hud.HudExample;
+import com.example.addon.modules.Alert;
 import com.example.addon.modules.EmptySlot;
 import com.example.addon.modules.HitNotifier;
 import com.mojang.logging.LogUtils;
@@ -26,6 +27,7 @@ public class MUtils extends MeteorAddon {
         // Modules
         Modules.get().add(new HitNotifier());
         Modules.get().add(new EmptySlot());
+        Modules.get().add(new Alert());
 
         // Commands
         Commands.add(new CommandExample());

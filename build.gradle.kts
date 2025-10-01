@@ -27,6 +27,9 @@ dependencies {
 
     // Meteor
     modImplementation("meteordevelopment:meteor-client:${properties["minecraft_version"] as String}-SNAPSHOT")
+
+    //MUtils
+    implementation("io.github.cdimascio:dotenv-java:3.0.0")
 }
 
 tasks {
