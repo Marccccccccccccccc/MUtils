@@ -2,12 +2,9 @@ package com.example.addon.modules;
 
 import com.example.addon.MUtils;
 import meteordevelopment.meteorclient.events.entity.LivingEntityMoveEvent;
-import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.text.Text;
 
 public class AntiSuffocate extends Module {
 
@@ -22,4 +19,6 @@ public class AntiSuffocate extends Module {
         }
     }
 }
+/// TODO: Fix Block Breaking happening every tick
+/// TODO: Fix Possible Crash (idk if this module caused it)
 
