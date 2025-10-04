@@ -34,16 +34,18 @@ public class Alert extends Module {
         double y = player.getY();
         double z = player.getZ();
 
+        String payload = "{\"player\":\"" + name + "\", \"x\":\"" + x + "\", \"y\":\"" + y + "\", \"z\":\"" + z + "\"}";
+        payload = "player:" + name;
 
         if (webhookUrl == null) {
                 System.err.println("No webhook URL found! Set DISCORD_WEBHOOK_URL env variable.");
                 ChatUtils.sendMsg(Text.of("No webhook URL found! Set DISCORD_WEBHOOK_URL env variable."));
                 return;
             } else {
-                Webhook.send(webhookUrl,"Player: " + name + " at X=" + x + " Y=" + y + " Z=" + z);
+                Webhook.send(webhookUrl,payload);
         }
 
-
+        System.out.println(payload);
         ///ChatUtils.sendMsg(Text.of("New Entity Added!"));
     }
 }

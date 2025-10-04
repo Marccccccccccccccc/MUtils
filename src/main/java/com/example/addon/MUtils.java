@@ -28,6 +28,7 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new Alert());
         Modules.get().add(new StashFinderPlus());
         Modules.get().add(new AntiSuffocate());
+        Modules.get().add(new AutoTrial());
 
         // Commands
         Commands.add(new CommandExample());
