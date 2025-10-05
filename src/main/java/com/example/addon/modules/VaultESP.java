@@ -8,6 +8,7 @@ import meteordevelopment.meteorclient.settings.Setting;
 import meteordevelopment.meteorclient.settings.SettingGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.meteorclient.utils.world.BlockEntityIterator;
@@ -18,7 +19,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.TrialSpawnerBlockEntity;
 import net.minecraft.block.entity.VaultBlockEntity;
 import net.minecraft.block.enums.VaultState;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,11 +74,18 @@ public class VaultESP extends Module {
                 // Get the block state
                 BlockState state = mc.world.getBlockState(pos);
 
-                // Get ominous property
+                // Get ominous property and vault state
                 boolean isOminous = state.get(VaultBlock.OMINOUS);
+                VaultState vaultState = state.get(VaultBlock.VAULT_STATE);
 
-                // Get vault state
-                //VaultState vaultState = state.get(VaultBlock.STATE);
+                // Vault is considered "opened/used" if it's not INACTIVE or ACTIVE
+                // INACTIVE = never used, ACTIVE = ready to unlock, anything else = used/unlocking/ejecting
+                boolean playerHasOpened = (vaultState != VaultState.INACTIVE && vaultState != VaultState.ACTIVE);
+
+                if (true) // Debug output
+                    //ChatUtils.sendMsg(Text.of("Vault state: " + vaultState + " | Opened: " + playerHasOpened));
+                //if (VaultState.INACTIVE == vaultState) return;
+                /// TODO: Dont render Vaults that were interacted with
 
                 if (isOminous) {
                     event.renderer.box(
