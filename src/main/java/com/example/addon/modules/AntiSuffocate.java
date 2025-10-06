@@ -1,7 +1,7 @@
 package com.example.addon.modules;
 
 import com.example.addon.MUtils;
-import meteordevelopment.meteorclient.events.entity.LivingEntityMoveEvent;
+import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.world.BlockUtils;
 import meteordevelopment.orbit.EventHandler;
@@ -13,12 +13,14 @@ public class AntiSuffocate extends Module {
     }
 
     @EventHandler
-    private void onSuffocation(LivingEntityMoveEvent event) {
-        if (mc.player != null && mc.player.isInsideWall()) {
+    private void onSuffocation(TickEvent.Pre event) {
+        if (mc.player == null || mc.world == null) return;
+
+        // Only break if actually suffocating
+        if (mc.player.isInsideWall()) {
             BlockUtils.breakBlock(mc.player.getBlockPos(), false);
         }
     }
 }
-/// TODO: Fix Block Breaking happening every tick
 /// TODO: Fix Possible Crash (idk if this module caused it)
 

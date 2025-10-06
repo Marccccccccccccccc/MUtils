@@ -30,6 +30,7 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new AntiSuffocate());
         Modules.get().add(new AutoTrial());
         Modules.get().add(new VaultESP());
+        Modules.get().add(new MessageRepeater());
 
         // Commands
         Commands.add(new CommandExample());
