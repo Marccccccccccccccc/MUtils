@@ -1,6 +1,7 @@
 package com.example.addon;
 
 import com.example.addon.commands.CommandExample;
+import com.example.addon.commands.Setpearl;
 import com.example.addon.hud.HudExample;
 import com.example.addon.modules.*;
 import com.example.addon.utils.Straighttp;
@@ -38,6 +39,7 @@ public class MUtils extends MeteorAddon {
 
         // Commands
         Commands.add(new CommandExample());
+        Commands.add(new Setpearl());
 
         // HUD
         Hud.get().register(HudExample.INFO);

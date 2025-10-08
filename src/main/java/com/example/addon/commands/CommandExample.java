@@ -18,15 +18,19 @@ public class CommandExample extends Command {
 
     @Override
     public void build(LiteralArgumentBuilder<CommandSource> builder) {
-        builder.executes(context -> {
-            info("hi");
-            return SINGLE_SUCCESS;
-        });
+        builder.then(argument("arg1", StringArgumentType.string())
+            .then(argument("arg2", StringArgumentType.greedyString())
+                .executes(context -> {
+                    String arg1 = StringArgumentType.getString(context, "arg1");
+                    String arg2 = StringArgumentType.getString(context, "arg2");
 
-        builder.then(literal("name").then(argument("nameArgument", StringArgumentType.word()).executes(context -> {
-            String argument = StringArgumentType.getString(context, "nameArgument");
-            info("hi, " + argument);
-            return SINGLE_SUCCESS;
-        })));
+                    //logic
+                    info("First argument: " + arg1);
+                    info("Second argument: " + arg2);
+
+                    return SINGLE_SUCCESS;//TODO: FIX TS
+                })
+            )
+        );
     }
 }
