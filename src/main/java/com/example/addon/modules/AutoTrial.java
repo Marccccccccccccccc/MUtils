@@ -3,7 +3,6 @@ package com.example.addon.modules;
 import com.example.addon.MUtils;
 import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
-import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.world.BlockEntityIterator;
@@ -27,7 +26,7 @@ public class AutoTrial extends Module {
         super(MUtils.CATEGORY, "AutoTrial", "Tries to automate Trial Chambers");
     }
 
-    // Method to get all trial spawner locations
+    // methodd for all trialspawners
     private List<TrialSpawnerBlockEntity> getAllTrialSpawners() {
         List<TrialSpawnerBlockEntity> spawners = new ArrayList<>();
 
@@ -36,7 +35,7 @@ public class AutoTrial extends Module {
         while (iterator.hasNext()) {
             BlockEntity blockEntity = iterator.next();
 
-            // Check if it's a trial spawner
+            // trialspawnercheck
             if (blockEntity instanceof TrialSpawnerBlockEntity) {
                 spawners.add((TrialSpawnerBlockEntity)blockEntity);
             }
@@ -55,9 +54,6 @@ public class AutoTrial extends Module {
         info("Found " + trialSpawners.size() + " trial spawners");
 
         for (TrialSpawnerBlockEntity blockEntity : trialSpawners) {
-            //TrialSpawnerLogic logic = spawner.getTrialSpawner();
-            //TrialSpawnerState state = logic.getState();
-
             info("Trial Spawner at " + blockEntity.getPos() + " - State: " + blockEntity.getSpawnerState());
             if (blockEntity.getSpawnerState() == TrialSpawnerState.COOLDOWN) {
                 info("Cooldown block found at " + blockEntity.getPos());
@@ -65,12 +61,10 @@ public class AutoTrial extends Module {
         }
     }
 
-    // Or for rendering
     @EventHandler
     private void onRender(Render3DEvent event) {
         BlockEntityIterator iterator = new BlockEntityIterator();
         assert mc.world != null;
-        ///long currentTime = mc.world.getTime();
 
         while (iterator.hasNext()) {
             BlockEntity blockEntity = iterator.next();
@@ -80,7 +74,7 @@ public class AutoTrial extends Module {
 
                 ///Vec3d textPos = new Vec3d(
                 ///    pos.getX() + 0.5,
-                ///    pos.getY() + 1.5,  // Above the spawner
+                ///    pos.getY() + 1.5,  // one block above spawner
                 ///    pos.getZ() + 0.5
                 ///);
 
@@ -103,7 +97,7 @@ public class AutoTrial extends Module {
                         new Color(0, 255, 0, 255),
                         ShapeMode.Both,
                         0);
-                } //else if (tEState == TrialSpawnerState.)
+                }
             }
         }
     }

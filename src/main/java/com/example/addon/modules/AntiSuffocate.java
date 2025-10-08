@@ -22,5 +22,3 @@ public class AntiSuffocate extends Module {
         }
     }
 }
-/// TODO: Fix Possible Crash (idk if this module caused it)
-

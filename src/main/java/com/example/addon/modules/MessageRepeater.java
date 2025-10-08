@@ -1,5 +1,6 @@
 package com.example.addon.modules;
 
+import com.example.addon.MUtils;
 import meteordevelopment.meteorclient.events.game.ReceiveMessageEvent;
 import meteordevelopment.meteorclient.settings.BoolSetting;
 import meteordevelopment.meteorclient.settings.IntSetting;
@@ -9,8 +10,9 @@ import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.orbit.EventHandler;
-import net.minecraft.text.Text;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +22,7 @@ public class MessageRepeater extends Module {
 
     private final Setting<Boolean> onlyFriends = sgGeneral.add(new BoolSetting.Builder()
         .name("only-friends")
-        .description("Wiederholt nur Nachrichten von Freunden.")
+        .description("")
         .defaultValue(true)
         .build()
     );
@@ -35,8 +37,8 @@ public class MessageRepeater extends Module {
     private final Setting<Integer> delay = sgGeneral.add(new IntSetting.Builder()
         .name("delay")
         .description("Verzögerung in Millisekunden vor dem Wiederholen.")
-        .defaultValue(100)
-        .min(0)
+        .defaultValue(500)
+        .min(100)
         .max(5000)
         .sliderMax(2000)
         .build()
@@ -49,7 +51,6 @@ public class MessageRepeater extends Module {
         .build()
     );
 
-    // Filter Settings
     private final Setting<Boolean> ignoreCommands = sgFilters.add(new BoolSetting.Builder()
         .name("ignore-commands")
         .description("Ignoriert Nachrichten die mit / starten.")
@@ -71,52 +72,65 @@ public class MessageRepeater extends Module {
         .build()
     );
 
-    // Patterns für verschiedene /msg Formate
+    private final Set<String> processedMessages = new HashSet<>();
+    private boolean isRepeating = false;
+
     private static final Pattern[] MSG_PATTERNS = {
-        Pattern.compile("^(\\[.*?\\] )?([\\w]+) whispers to you: (.+)$"), // Standard Essentials
-        Pattern.compile("^(\\[.*?\\] )?([\\w]+) -> me: (.+)$"), // Alternative Format
-        Pattern.compile("^From ([\\w]+): (.+)$"), // Einfaches Format
-        Pattern.compile("^\\[([\\w]+) -> me\\] (.+)$"), // Bracket Format
-        Pattern.compile("^([\\w]+) flüstert dir zu: (.+)$"), // Deutsch
+        //Pattern.compile("^(\\[.*?\\] )?([\\w]+) whispers to you: (.+)$"),
+        Pattern.compile("^(\\[.*?\\] )?([\\w]+) -> me: (.+)$"),
+        Pattern.compile("^From ([\\w]+): (.+)$"),
+        Pattern.compile("^\\[([\\w]+) -> me\\] (.+)$"),
+        Pattern.compile("^([\\w]+) flüstert dir zu: (.+)$"),
     };
 
     public MessageRepeater() {
-        super(Categories.Misc, "msg-repeater", "Wiederholt Nachrichten von Freunden im Chat.");
+        super(MUtils.CATEGORY2, "msg-repeater", "Use this for Commands and trolling");
     }
 
     @EventHandler
     private void onMessageReceive(ReceiveMessageEvent event) {
-        if (mc.player == null) return;
+        // stop recursively calling the method
+        if (isRepeating || mc.player == null) return;
 
-        String message = event.getMessage().getString();
+        try {
+            String message = event.getMessage().getString();
 
-        if (debug.get()) {
-            info("Received: " + message);
-        }
+            // Ignoriere leere Nachrichten
+            if (message == null || message.trim().isEmpty()) return;
 
-        // Prüfe ob es eine private Nachricht ist
-        if (privateOnly.get()) {
-            String[] result = parsePrivateMessage(message);
-            if (result != null) {
-                String sender = result[0];
-                String content = result[1];
+            // Verhindere doppeltes Verarbeiten
+            String messageHash = message + System.currentTimeMillis() / 1000; // Sekunden-Precision
+            if (processedMessages.contains(messageHash)) return;
+            processedMessages.add(messageHash);
 
-                if (debug.get()) {
-                    info("Private message from: " + sender + " | Content: " + content);
-                }
-
-                handleMessage(sender, content);
+            // Cleanup alte Einträge
+            if (processedMessages.size() > 100) {
+                processedMessages.clear();
             }
-        } else {
-            // Auch öffentliche Nachrichten verarbeiten
-            // Format: <username> message oder [prefix] <username> message
-            Pattern publicPattern = Pattern.compile("^(?:\\[.*?\\] )?<([\\w]+)> (.+)$");
-            Matcher matcher = publicPattern.matcher(message);
 
-            if (matcher.matches()) {
-                String sender = matcher.group(1);
-                String content = matcher.group(2);
-                handleMessage(sender, content);
+            // Prüfe ob es eine private Nachricht ist
+            if (privateOnly.get()) {
+                String[] result = parsePrivateMessage(message);
+                if (result != null) {
+                    String sender = result[0];
+                    String content = result[1];
+                    handleMessage(sender, content);
+                }
+            } else {
+                // Auch öffentliche Nachrichten verarbeiten
+                Pattern publicPattern = Pattern.compile("^(?:\\[.*?\\] )?<([\\w]+)> (.+)$");
+                Matcher matcher = publicPattern.matcher(message);
+
+                if (matcher.matches()) {
+                    String sender = matcher.group(1);
+                    String content = matcher.group(2);
+                    handleMessage(sender, content);
+                }
+            }
+        } catch (Exception e) {
+            // Fange alle Fehler ab um Crashes zu vermeiden
+            if (debug.get()) {
+                System.err.println("[MessageRepeater] Error: " + e.getMessage());
             }
         }
     }
@@ -136,24 +150,29 @@ public class MessageRepeater extends Module {
     }
 
     private void handleMessage(String sender, String content) {
-        // Prüfe ob Sender ein Freund ist
-        if (onlyFriends.get() && Friends.get().get(sender) == null) {
-            if (debug.get()) {
-                info("Ignored: " + sender + " is not a friend");
+        try {
+            // Ignoriere eigene Nachrichten
+            if (mc.player != null && sender.equalsIgnoreCase(mc.player.getName().getString())) {
+                return;
             }
-            return;
-        }
 
-        // Filter anwenden
-        if (shouldIgnoreMessage(content)) {
-            if (debug.get()) {
-                info("Ignored by filter: " + content);
+            // Prüfe ob Sender ein Freund ist
+            if (onlyFriends.get() && Friends.get().get(sender) == null) {
+                return;
             }
-            return;
-        }
 
-        // Nachricht wiederholen
-        repeatMessage(content);
+            // Filter anwenden
+            if (shouldIgnoreMessage(content)) {
+                return;
+            }
+
+            // Nachricht wiederholen
+            repeatMessage(content);
+        } catch (Exception e) {
+            if (debug.get()) {
+                System.err.println("[MessageRepeater] HandleMessage Error: " + e.getMessage());
+            }
+        }
     }
 
     private boolean shouldIgnoreMessage(String message) {
@@ -175,25 +194,36 @@ public class MessageRepeater extends Module {
             try {
                 Thread.sleep(delay.get());
 
-                if (mc.player != null) {
-                    mc.player.networkHandler.sendChatMessage(message);
+                // Setze Flag um Rekursion zu vermeiden
+                isRepeating = true;
 
-                    if (debug.get()) {
-                        info("Repeated: " + message);
-                    }
+                if (mc.player != null && mc.player.networkHandler != null) {
+                    mc.player.networkHandler.sendChatMessage(message);
                 }
-            } catch (InterruptedException e) {
-                error("Message repeat interrupted");
+
+                // Warte kurz bevor wir das Flag zurücksetzen
+                Thread.sleep(100);
+                isRepeating = false;
+
+            } catch (Exception e) {
+                isRepeating = false;
+                if (debug.get()) {
+                    System.err.println("[MessageRepeater] Repeat Error: " + e.getMessage());
+                }
             }
         }).start();
     }
 
     @Override
     public void onActivate() {
-        if (debug.get()) {
-            info("MessageRepeater activated");
-            info("Only friends: " + onlyFriends.get());
-            info("Private only: " + privateOnly.get());
-        }
+        processedMessages.clear();
+        isRepeating = false;
+    }
+
+    @Override
+    public void onDeactivate() {
+        processedMessages.clear();
+        isRepeating = false;
     }
 }
+
