@@ -37,6 +37,10 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new MessageRepeater());
         Modules.get().add(new AOTV());
         /// TODO: Add an module that places obsidian above and below you to get you to crawl
+        /// TODO: Add an module that teleports you in crawlholes
+        /// TODO: Add an module that leaves when you have a specific amount of an item eg Totems
+        /// TODO: Finish AutoTrial
+        /// TODO "Forke" e621 hud for any website eg botcontrol (;
 
 
         // Commands
