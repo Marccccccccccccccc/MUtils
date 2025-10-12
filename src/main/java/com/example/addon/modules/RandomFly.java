@@ -102,7 +102,7 @@ public class RandomFly extends Module {
             // Update our speed setting
             speed.set(newSpeed);
         }
-
+/*
         // Always apply our speed to Flight
         try {
             Setting<Double> flightSpeed = (Setting<Double>) flight.settings.get("speed");
@@ -112,6 +112,8 @@ public class RandomFly extends Module {
         } catch (Exception e) {
             // Ignore casting exceptions
         }
+
+ */
     }
 
     @Override

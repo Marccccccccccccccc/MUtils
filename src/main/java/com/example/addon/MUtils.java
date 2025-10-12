@@ -30,12 +30,13 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new HitNotifier());
         Modules.get().add(new EmptySlot());
         Modules.get().add(new Alert());
-        Modules.get().add(new StashFinderPlus());
+        ///Modules.get().add(new StashFinderPlus());
         Modules.get().add(new AntiSuffocate());
         Modules.get().add(new AutoTrial());
         Modules.get().add(new VaultESP());
         Modules.get().add(new MessageRepeater());
         Modules.get().add(new AOTV());
+        Modules.get().add(new ForceCrawl());
         /// TODO: Add an module that places obsidian above and below you to get you to crawl
         /// TODO: Add an module that teleports you in crawlholes
         /// TODO: Add an module that leaves when you have a specific amount of an item eg Totems
