@@ -6,24 +6,26 @@ import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 
-public class HudExample extends HudElement {
+import static com.example.addon.modules.EnderNuker.getBlocksPerSecond;
+
+public class BPS extends HudElement {
     /**
      * The {@code name} parameter should be in kebab-case.
      */
-    public static final HudElementInfo<HudExample> INFO = new HudElementInfo<>(MUtils.HUD_GROUP, "example", "HUD element example.", HudExample::new);
+    public static final HudElementInfo<BPS> INFO = new HudElementInfo<>(MUtils.HUD_GROUP, "BPS", "Displays the Blocks per Second", BPS::new);
 
-    public HudExample() {
+    public BPS() {
         super(INFO);
     }
 
     @Override
     public void render(HudRenderer renderer) {
-        setSize(renderer.textWidth("Example element", true), renderer.textHeight(true));
+        setSize(renderer.textWidth("BPS", true), renderer.textHeight(true));
 
         // Render background
-        renderer.quad(x, y, getWidth(), getHeight(), Color.LIGHT_GRAY);
+        renderer.quad(x, y, getWidth(), getHeight(), Color.BLACK);
 
         // Render text
-        renderer.text("Example element", x, y, Color.WHITE, true);
+        renderer.text(String.format("%.1f BPS", getBlocksPerSecond()), x, y, Color.WHITE, true);
     }
 }

@@ -10,4 +10,6 @@ public class Straighttp {
         double x = origin.x - distance * Math.sin(yawRad) * Math.cos(pitchRad);
         double y = origin.y + distance * Math.sin(-pitchRad);
         double z = origin.z + distance * Math.cos(yawRad) * Math.cos(pitchRad);
-        return new Vec3d(x, y, z);}}
+        return new Vec3d(x, y, z);
+    }
+}

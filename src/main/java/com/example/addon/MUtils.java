@@ -1,10 +1,8 @@
 package com.example.addon;
 
-import com.example.addon.commands.CommandExample;
 import com.example.addon.commands.Setpearl;
-import com.example.addon.hud.HudExample;
+import com.example.addon.hud.BPS;
 import com.example.addon.modules.*;
-import com.example.addon.utils.Straighttp;
 import com.mojang.logging.LogUtils;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
@@ -13,7 +11,6 @@ import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import net.minecraft.item.Items;
 import org.slf4j.Logger;
 
 public class MUtils extends MeteorAddon {
@@ -37,7 +34,11 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new MessageRepeater());
         Modules.get().add(new AOTV());
         Modules.get().add(new ForceCrawl());
-        /// TODO: Add an module that places obsidian above and below you to get you to crawl
+        Modules.get().add(new EnderNuker());
+        Modules.get().add(new DoubleBreak());
+        Modules.get().add(new ItemLog());
+        Modules.get().add(new ModlistLogger());
+        /// TODO: Finish Forcecrawl
         /// TODO: Add an module that teleports you in crawlholes
         /// TODO: Add an module that leaves when you have a specific amount of an item eg Totems
         /// TODO: Finish AutoTrial
@@ -45,11 +46,10 @@ public class MUtils extends MeteorAddon {
 
 
         // Commands
-        Commands.add(new CommandExample());
         Commands.add(new Setpearl());
 
         // HUD
-        Hud.get().register(HudExample.INFO);
+        Hud.get().register(BPS.INFO);
     }
 
     @Override

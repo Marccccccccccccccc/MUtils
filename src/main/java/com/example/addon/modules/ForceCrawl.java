@@ -84,6 +84,7 @@ public class ForceCrawl extends Module {
                 mc.player.getZ()
             );
             BlockUtils.interact(new BlockHitResult(blockPos.toCenterPos(), BlockUtils.getDirection(blockPos), blockPos, true), Hand.MAIN_HAND, false);
+            /// TODO: fix the interact
         }
 
         //toggle();
