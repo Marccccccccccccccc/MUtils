@@ -22,7 +22,6 @@ import net.minecraft.block.enums.VaultState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import java.util.Optional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +106,6 @@ public class VaultESP extends Module {
                     );
                 }
             }
-
         }
     }
 }
