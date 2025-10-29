@@ -6,7 +6,7 @@ import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 
-import static com.example.addon.modules.EnderNuker.getBlocksPerSecond;
+//import static com.example.addon.modules.EnderNuker.getBlocksPerSecond;
 
 public class BPS extends HudElement {
     /**
@@ -26,6 +26,6 @@ public class BPS extends HudElement {
         renderer.quad(x, y, getWidth(), getHeight(), Color.BLACK);
 
         // Render text
-        renderer.text(String.format("%.1f BPS", getBlocksPerSecond()), x, y, Color.WHITE, true);
+        //renderer.text(String.format("%.1f BPS", getBlocksPerSecond()), x, y, Color.WHITE, true);
     }
 }

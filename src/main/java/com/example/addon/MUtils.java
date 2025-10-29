@@ -1,13 +1,11 @@
 package com.example.addon;
 
 import com.example.addon.commands.Setpearl;
-import com.example.addon.hud.BPS;
 import com.example.addon.modules.*;
 import com.mojang.logging.LogUtils;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.commands.Commands;
-import meteordevelopment.meteorclient.systems.hud.Hud;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
@@ -34,12 +32,16 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new MessageRepeater());
         Modules.get().add(new AOTV());
         Modules.get().add(new ForceCrawl());
-        Modules.get().add(new EnderNuker());
-        Modules.get().add(new DoubleBreak());
+        //Modules.get().add(new EnderNuker());
+        //Modules.get().add(new DoubleBreak());
         Modules.get().add(new ItemLog());
         Modules.get().add(new ModlistLogger());
-        /// TODO: Finish Forcecrawl
-        /// TODO: Add an module that teleports you in crawlholes
+        Modules.get().add(new ScaredyCatRewrite());
+        Modules.get().add(new AdminAbuseNotify());
+        Modules.get().add(new CWP());
+        Modules.get().add(new BlockBreakLogger());
+        /// TODO: Finish Forcecrawl (Water in head) + Block underneath you (Scaffold)
+        /// TODO: ScaredyCatRewrite + Crawl holes
         /// TODO: Add an module that leaves when you have a specific amount of an item eg Totems
         /// TODO: Finish AutoTrial
         /// TODO "Forke" e621 hud for any website eg botcontrol (;
@@ -49,7 +51,7 @@ public class MUtils extends MeteorAddon {
         Commands.add(new Setpearl());
 
         // HUD
-        Hud.get().register(BPS.INFO);
+        //Hud.get().register(BPS.INFO);
     }
 
     @Override
