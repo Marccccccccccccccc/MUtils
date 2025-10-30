@@ -41,7 +41,6 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new AdminAbuseNotify());
         Modules.get().add(new CWP());
         Modules.get().add(new BlockBreakLogger());
-        Modules.get().add(new UnfocusedCPU());
         Modules.get().add(new DamageLogger());
         /// TODO: Finish Forcecrawl (Water in head) + Block underneath you (Scaffold)
         /// TODO: ScaredyCatRewrite + Crawl holes
@@ -51,7 +50,7 @@ public class MUtils extends MeteorAddon {
 
 
         // Commands
-        Commands.add(new Setpearl());
+
 
         // HUD
         //Hud.get().register(BPS.INFO);

@@ -1,6 +1,7 @@
 package marc3d.mutils.modules;
 
 import marc3d.mutils.MUtils;
+import marc3d.mutils.utils.movement.Movement;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -16,6 +17,7 @@ import static marc3d.mutils.utils.Straighttp.moveByYawPitch;
 
 public class AOTV extends Module {
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
+    private final SettingGroup sgMoreSettings = settings.createGroup("More Settings");
 
     private final Setting<Double> Distance = sgGeneral.add(new DoubleSetting.Builder()
         .name("Distance")
@@ -42,6 +44,17 @@ public class AOTV extends Module {
         .defaultValue(true)
         .build()
     );
+    private final Setting<Boolean> setClientSided = sgGeneral.add(new BoolSetting.Builder()
+        .name("setClientSided")
+        .defaultValue(true)
+        .build()
+    );
+    private final Setting<Boolean> onGroud = sgGeneral.add(new BoolSetting.Builder()
+        .name("onGroud")
+        .defaultValue(false)
+        .build()
+    );
+
 
     private int cooldown = Delay.get();
 
@@ -70,7 +83,7 @@ public class AOTV extends Module {
             if (Sword.get() && isSword) {
                 Vec3d newPos = moveByYawPitch(mc.player.getEyePos(), mc.player.getYaw(), mc.player.getPitch(), Distance.get());
                 if (playsound.get()) mc.world.playSoundFromEntity(mc.player, mc.player, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.AMBIENT, 3.0F, 1.0F);
-                mc.player.setPosition(newPos.getX(), newPos.getY(), newPos.getZ());
+                Movement.teleport(newPos, setClientSided.get(), onGroud.get());
                 cooldown = Delay.get();
             }
 
