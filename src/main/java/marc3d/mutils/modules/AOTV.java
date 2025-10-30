@@ -44,20 +44,18 @@ public class AOTV extends Module {
         .defaultValue(true)
         .build()
     );
-    private final Setting<Boolean> setClientSided = sgGeneral.add(new BoolSetting.Builder()
+    private final Setting<Boolean> setClientSided = sgMoreSettings.add(new BoolSetting.Builder()
         .name("setClientSided")
         .defaultValue(true)
         .build()
     );
-    private final Setting<Boolean> onGroud = sgGeneral.add(new BoolSetting.Builder()
+    private final Setting<Boolean> onGroud = sgMoreSettings.add(new BoolSetting.Builder()
         .name("onGroud")
         .defaultValue(false)
         .build()
     );
 
-
     private int cooldown = Delay.get();
-
 
     public AOTV() {
         super(MUtils.CATEGORY, "AOTV", "Hypixel mfs will love this");
