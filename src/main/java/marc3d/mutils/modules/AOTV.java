@@ -23,7 +23,7 @@ public class AOTV extends Module {
         .name("Distance")
         .description("Distance to teleport")
         .min(1)
-        .max(20) /// TODO: Find out max value
+        .max(210)
         .build()
     );
     private final Setting<Integer> Delay = sgGeneral.add(new IntSetting.Builder()
@@ -59,7 +59,6 @@ public class AOTV extends Module {
     private int cooldown = Delay.get();
 
 
-    ///private final Setting<Boolean> Todo add raycast to test for blocks maybe
     public AOTV() {
         super(MUtils.CATEGORY, "AOTV", "Hypixel mfs will love this");
     }
@@ -86,8 +85,6 @@ public class AOTV extends Module {
                 Movement.teleport(newPos, setClientSided.get(), onGroud.get());
                 cooldown = Delay.get();
             }
-
-        //ChatUtils.sendMsg(Text.of("New position: " + newPos));
-
+        }
     }
-}}
+}
