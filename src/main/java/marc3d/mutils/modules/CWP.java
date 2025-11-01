@@ -26,7 +26,7 @@ public class CWP extends Module {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ignored) {}
-                    CloseWithoutPacket.takeOutItem(0);
+                    CloseWithoutPacket.swapItem(0);
                     CloseWithoutPacket.closeScreen();
                 }).start();
             }

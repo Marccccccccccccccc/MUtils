@@ -234,7 +234,7 @@ public class ECMace extends Module {
         previousSlot = mc.player.getInventory().selectedSlot;
 
         // Take mace from EC
-        CloseWithoutPacket.takeOutItem(maceSlot.get());
+        CloseWithoutPacket.swapItem(maceSlot.get());
 
         if (debugMode.get()) {
             ChatUtils.info("Took mace from EC slot " + maceSlot.get());

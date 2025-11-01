@@ -19,7 +19,7 @@ public class CloseWithoutPacket {
      * Swaps an item from the Ender Chest with hotbar slot 0 using packets
      * @param slot The slot number in the Ender Chest (0-26 for the 27 slots)
      */
-    public static void takeOutItem(int slot) {
+    public static void swapItem(int slot) {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientPlayerEntity player = client.player;
 

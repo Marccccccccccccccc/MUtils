@@ -1,16 +1,24 @@
 package marc3d.mutils;
 
+import marc3d.mutils.commands.ECTakeCommand;
 import marc3d.mutils.commands.Setpearl;
 import marc3d.mutils.modules.*;
 import com.mojang.logging.LogUtils;
+import marc3d.mutils.utils.ECUtils;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.commands.Commands;
+import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
+import meteordevelopment.orbit.EventHandler;
 import org.slf4j.Logger;
+
+
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class MUtils extends MeteorAddon {
     public static final Logger LOG = LogUtils.getLogger();
@@ -42,6 +50,8 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new CWP());
         Modules.get().add(new BlockBreakLogger());
         Modules.get().add(new DamageLogger());
+        Modules.get().add(new ECTracker());
+        Modules.get().add(new Boykisser());
         /// TODO: Finish Forcecrawl (Water in head) + Block underneath you (Scaffold)
         /// TODO: ScaredyCatRewrite + Crawl holes
         /// TODO: Finish AutoTrial
@@ -50,13 +60,15 @@ public class MUtils extends MeteorAddon {
 
 
         // Commands
-
+        Commands.add(new ECTakeCommand());
 
         // HUD
         //Hud.get().register(BPS.INFO);
 
         //SS
-        MeteorStarscript.ss.set("test", "hello world");
+        MeteorStarscript.ss.set("ECOpen", "N/A");
+
+        //Utils
     }
 
     @Override
