@@ -1,30 +1,29 @@
 package marc3d.mutils;
 
+import marc3d.mutils.commands.BroadcastCommand;
 import marc3d.mutils.commands.ECTakeCommand;
-import marc3d.mutils.commands.Setpearl;
 import marc3d.mutils.modules.*;
 import com.mojang.logging.LogUtils;
-import marc3d.mutils.utils.ECUtils;
+import marc3d.mutils.utils.PlayerDataManager;
 import meteordevelopment.meteorclient.addons.GithubRepo;
 import meteordevelopment.meteorclient.addons.MeteorAddon;
 import meteordevelopment.meteorclient.commands.Commands;
-import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.hud.HudGroup;
 import meteordevelopment.meteorclient.systems.modules.Category;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
-import meteordevelopment.meteorclient.utils.player.ChatUtils;
-import meteordevelopment.orbit.EventHandler;
 import org.slf4j.Logger;
 
 
-import static meteordevelopment.meteorclient.MeteorClient.mc;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MUtils extends MeteorAddon {
     public static final Logger LOG = LogUtils.getLogger();
     public static final Category CATEGORY = new Category("MUtils");
     public static final Category CATEGORY2 = new Category("MUtils-BOT");
     public static final HudGroup HUD_GROUP = new HudGroup("Example");
+    public static final List<String> broadcastUsers = new ArrayList<>();
 
     @Override
     public void onInitialize() {
@@ -41,7 +40,7 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new MessageRepeater());
         Modules.get().add(new AOTV());
         Modules.get().add(new ForceCrawl());
-        //Modules.get().add(new EnderNuker());
+        Modules.get().add(new RattenNuker());
         //Modules.get().add(new DoubleBreak());
         Modules.get().add(new ItemLog());
         Modules.get().add(new ModlistLogger());
@@ -52,6 +51,8 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new DamageLogger());
         Modules.get().add(new ECTracker());
         Modules.get().add(new Boykisser());
+        Modules.get().add(new VillagerTraderModule());
+        Modules.get().add(new NeverFall());
         /// TODO: Finish Forcecrawl (Water in head) + Block underneath you (Scaffold)
         /// TODO: ScaredyCatRewrite + Crawl holes
         /// TODO: Finish AutoTrial
@@ -61,6 +62,7 @@ public class MUtils extends MeteorAddon {
 
         // Commands
         Commands.add(new ECTakeCommand());
+        Commands.add(new BroadcastCommand());
 
         // HUD
         //Hud.get().register(BPS.INFO);
@@ -69,6 +71,13 @@ public class MUtils extends MeteorAddon {
         MeteorStarscript.ss.set("ECOpen", "N/A");
 
         //Utils
+        PlayerDataManager.load();
+
+        //Tabs
+        //Tabs.add(new Broadcast());
+
+        //Hooks
+        Runtime.getRuntime().addShutdownHook(new Thread(PlayerDataManager::save));
     }
 
     @Override

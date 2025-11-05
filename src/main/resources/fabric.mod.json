@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "id": "mutils",
-  "version": "${version}",
+  "version": "6.9",
   "name": "MUtils",
   "description": "MUils",
   "authors": [
     "Marccccccccccccccc"
   ],
   "contact": {
-    "sources": "https://github.com/MeteorDevelopment/meteor-mutils"
+    "sources": "https://github.com/Marccccccccccccccc/MUtils"
   },
-  "icon": "assets.mutils/icon.png",
+  "icon": "icon.png",
   "environment": "client",
   "entrypoints": {
     "meteor": [

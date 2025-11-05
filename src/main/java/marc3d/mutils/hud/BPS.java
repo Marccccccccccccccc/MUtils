@@ -6,7 +6,7 @@ import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 
-//import static marc3d.mutils.modules.EnderNuker.getBlocksPerSecond;
+//import static marc3d.mutils.modules.RattenNuker.getBlocksPerSecond;
 
 public class BPS extends HudElement {
     /**

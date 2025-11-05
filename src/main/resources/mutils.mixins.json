@@ -2,7 +2,7 @@
   "required": true,
   "package": "marc3d.mutils.mixin",
   "compatibilityLevel": "JAVA_21",
-  "client": ["ExampleMixin","AbstractClientPlayerEntityMixin"],
+  "client": ["ExampleMixin","AbstractClientPlayerEntityMixin","PlayerMoveC2SPacketMixin"],
   "injectors": {
     "defaultRequire": 1
   }

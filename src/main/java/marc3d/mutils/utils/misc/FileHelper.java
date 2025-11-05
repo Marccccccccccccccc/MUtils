@@ -22,8 +22,8 @@ public class FileHelper {
 
     /* ===== Log File Methods ===== */
     /**
-     * Gets the enemies config file
-     * Format: OrionHack/configs/enemies.txt
+     * Gets the Broadcasts config file
+     * Format: OrionHack/configs/Broadcasts.txt
      */
     public static File getBlacklistFile() {
         return new File(CONFIG_DIR, "blacklist.txt");
