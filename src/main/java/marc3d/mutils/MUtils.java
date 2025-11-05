@@ -45,7 +45,6 @@ public class MUtils extends MeteorAddon {
         Modules.get().add(new ItemLog());
         Modules.get().add(new ModlistLogger());
         Modules.get().add(new ScaredyCatRewrite());
-        Modules.get().add(new AdminAbuseNotify());
         Modules.get().add(new CWP());
         Modules.get().add(new BlockBreakLogger());
         Modules.get().add(new DamageLogger());
