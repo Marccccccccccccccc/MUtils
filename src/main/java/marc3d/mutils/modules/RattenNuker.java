@@ -10,7 +10,6 @@ import meteordevelopment.meteorclient.events.render.Render3DEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.renderer.ShapeMode;
 import meteordevelopment.meteorclient.settings.*;
-import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
 import meteordevelopment.meteorclient.systems.modules.world.Nuker;
 import meteordevelopment.meteorclient.utils.Utils;
@@ -144,12 +143,21 @@ public class RattenNuker extends Module {
         .build()
     );
 
-    private final Setting<Integer> blockDelay = sgGeneral.add(new IntSetting.Builder()
-        .name("block-delay")
-        .description("Delay in milliseconds between breaking individual blocks.")
+    private final Setting<Integer> startDelay = sgGeneral.add(new IntSetting.Builder()
+        .name("start-delay")
+        .description("Delay in milliseconds between sending START packets for each block.")
         .defaultValue(0)
         .min(0)
-        .sliderMax(1000)
+        .sliderMax(100)
+        .build()
+    );
+
+    private final Setting<Integer> startStopDelay = sgGeneral.add(new IntSetting.Builder()
+        .name("start-stop-delay")
+        .description("Delay in milliseconds between START and STOP packets (simulates mining time).")
+        .defaultValue(0)
+        .min(0)
+        .sliderMax(500)
         .build()
     );
 
@@ -291,6 +299,7 @@ public class RattenNuker extends Module {
     private final List<BlockPos> blocks = new ArrayList<>();
     private final Set<BlockPos> recentlyBroken = new ObjectOpenHashSet<>();
     private final List<BrokenBlock> brokenBlockTimers = new ArrayList<>();
+    private final List<PendingBreak> pendingBreaks = new ArrayList<>();
 
     private final BlockPos.Mutable pos1 = new BlockPos.Mutable();
     private final BlockPos.Mutable pos2 = new BlockPos.Mutable();
@@ -306,6 +315,7 @@ public class RattenNuker extends Module {
     public void onActivate() {
         recentlyBroken.clear();
         brokenBlockTimers.clear();
+        pendingBreaks.clear();
         lastBlockBreakTime = 0;
     }
 
@@ -324,29 +334,38 @@ public class RattenNuker extends Module {
         }
     }
 
-    @EventHandler
-    private void onMouseButton(MouseButtonEvent event) {
-        if (event.action == KeyAction.Press) addTargetedBlockToList();
-    }
-
-    @EventHandler
-    private void onKey(KeyEvent event) {
-        if (event.action == KeyAction.Press) addTargetedBlockToList();
-    }
+    //Removed Unnecessary Code
 
     @EventHandler
     private void onTickPre(TickEvent.Pre event) {
-        // Update broken block timers
+        // Process pending STOP packets
         long currentTime = System.currentTimeMillis();
+        pendingBreaks.removeIf(pending -> {
+            if (currentTime >= pending.stopTime) {
+                sendStopPacket(pending.pos);
+
+                if (enableRenderBreaking.get()) {
+                    RenderUtils.renderTickingBlock(pending.pos, sideColor.get(), lineColor.get(), shapeModeBreak.get(), 0, 8, true, false);
+                }
+
+                if (assumeInstamine.get()) {
+                    recentlyBroken.add(pending.pos.toImmutable());
+                    brokenBlockTimers.add(new BrokenBlock(pending.pos.toImmutable(), currentTime));
+                }
+                return true;
+            }
+            return false;
+        });
+
+        // Update broken block timers
         brokenBlockTimers.removeIf(bb -> {
-            if (currentTime - bb.breakTime >= getAdjustedClientDelay()) {
+            if (currentTime - bb.breakTime >= clientsideDelay.get()) {///TODO: Make tps adjusted maybe
                 recentlyBroken.remove(bb.pos);
                 return true;
             }
             return false;
         });
 
-        // Calculate position parameters
         double pX = mc.player.getX(), pY = mc.player.getY(), pZ = mc.player.getZ();
         double rangeSq = Math.pow(range.get(), 2);
         BlockPos playerBlockPos = mc.player.getBlockPos();
@@ -446,35 +465,31 @@ public class RattenNuker extends Module {
 
             if (blocks.isEmpty()) return;
 
-            // Break multiple blocks with delay
+            // Break multiple blocks with overlapping technique (non-blocking)
             int count = 0;
+            long currentTimeMillis = System.currentTimeMillis();
+            long startPacketTime = currentTimeMillis;
+
+            // Send all START packets and schedule STOP packets
             for (BlockPos block : blocks) {
                 if (count >= maxBlocksPerTick.get()) break;
 
-                // Check if enough time has passed since last block break
-                long timeSinceLastBreak = System.currentTimeMillis() - lastBlockBreakTime;
-                int adjustedDelay = getAdjustedBlockDelay();
-
-                if (count > 0 && adjustedDelay > 0 && timeSinceLastBreak < adjustedDelay) {
-                    break; // Stop breaking blocks if delay hasn't passed
+                if (rotate.get()) {
+                    Rotations.rotate(Rotations.getYaw(block), Rotations.getPitch(block),
+                        () -> sendStartPacket(block));
+                } else {
+                    sendStartPacket(block);
                 }
 
-                if (rotate.get()) Rotations.rotate(Rotations.getYaw(block), Rotations.getPitch(block), () -> breakBlock(block));
-                else breakBlock(block);
+                // Schedule STOP packet for later (non-blocking)
+                long stopTime = startPacketTime + (count * getAdjustedStartDelay()) + getAdjustedStartStopDelay();
+                pendingBreaks.add(new PendingBreak(block.toImmutable(), stopTime));
 
-                if (enableRenderBreaking.get()) {
-                    RenderUtils.renderTickingBlock(block, sideColor.get(), lineColor.get(), shapeModeBreak.get(), 0, 8, true, false);
-                }
-
-                // Add to recently broken with clientside delay
-                if (assumeInstamine.get()) {
-                    recentlyBroken.add(block.toImmutable());
-                    brokenBlockTimers.add(new BrokenBlock(block.toImmutable(), System.currentTimeMillis()));
-                }
-
-                lastBlockBreakTime = System.currentTimeMillis();
                 count++;
             }
+
+            // Swing hand once for all blocks
+            if (swing.get()) mc.player.swingHand(Hand.MAIN_HAND);
 
             blocks.clear();
         });
@@ -482,21 +497,40 @@ public class RattenNuker extends Module {
 
     private static final List<Long> blockBreakTimes = new ArrayList<>();
 
-    private void breakBlock(BlockPos blockPos) {
-        // Send start break packet
+    private void sendStartPacket(BlockPos blockPos) {
         mc.getNetworkHandler().sendPacket(
             new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK,
                 blockPos, BlockUtils.getDirection(blockPos), 0));
+    }
 
-        // Swing hand
-        if (swing.get()) mc.player.swingHand(Hand.MAIN_HAND);
-
-        // Send stop break packet (assume instant break)
+    private void sendStopPacket(BlockPos blockPos) {
         mc.getNetworkHandler().sendPacket(
             new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK,
                 blockPos, BlockUtils.getDirection(blockPos), 0));
     }
 
+    private void breakBlock(BlockPos blockPos) {
+        sendStartPacket(blockPos);
+        if (swing.get()) mc.player.swingHand(Hand.MAIN_HAND);
+        sendStopPacket(blockPos);
+    }
+
+    private int getAdjustedStartDelay() {
+        if (!tpsSync.get()) return startDelay.get();
+
+        float tps = mc.world != null ? mc.world.getTickManager().getTickRate() : 20f;
+        float tpsMultiplier = 20f / Math.max(tps, 1f);
+        return (int) (startDelay.get() * tpsMultiplier);
+    }
+
+    private int getAdjustedStartStopDelay() {
+        if (!tpsSync.get()) return startStopDelay.get();
+
+        float tps = mc.world != null ? mc.world.getTickManager().getTickRate() : 20f;
+        float tpsMultiplier = 20f / Math.max(tps, 1f);
+        return (int) (startStopDelay.get() * tpsMultiplier);
+    }
+    /*
     private int getAdjustedBlockDelay() {
         if (!tpsSync.get()) return blockDelay.get();
 
@@ -514,6 +548,7 @@ public class RattenNuker extends Module {
         float tpsMultiplier = 20f / Math.max(tps, 1f);
         return (int) (clientsideDelay.get() * tpsMultiplier);
     }
+    */
 
     @EventHandler
     private void onReceivePacket(PacketEvent.Receive event) {
@@ -579,6 +614,16 @@ public class RattenNuker extends Module {
         BrokenBlock(BlockPos pos, long breakTime) {
             this.pos = pos;
             this.breakTime = breakTime;
+        }
+    }
+
+    private static class PendingBreak {
+        BlockPos pos;
+        long stopTime;
+
+        PendingBreak(BlockPos pos, long stopTime) {
+            this.pos = pos;
+            this.stopTime = stopTime;
         }
     }
 }
