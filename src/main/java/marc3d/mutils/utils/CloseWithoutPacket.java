@@ -38,8 +38,7 @@ public class CloseWithoutPacket {
             int syncId = player.currentScreenHandler.syncId;
             int revision = player.currentScreenHandler.getRevision();
 
-            // Create the packet for SWAP action (pressing number key)
-            // button 0 = hotbar slot 0 (key "1")
+            
             ClickSlotC2SPacket packet = new ClickSlotC2SPacket(
                 syncId,
                 revision,

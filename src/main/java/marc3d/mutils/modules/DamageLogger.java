@@ -1,18 +1,22 @@
 package marc3d.mutils.modules;
 
 import marc3d.mutils.MUtils;
+import marc3d.mutils.utils.Webhook;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
+import net.minecraft.text.Text;
 
 import static marc3d.mutils.utils.misc.TextUtils.formatMinecraftString;
 
 public class DamageLogger extends Module {
+    String webhookUrl = System.getenv("DISCORD_WEBHOOK_URL");
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
 
     private final Setting<logMode> logModeSetting = sgGeneral.add(new EnumSetting.Builder<logMode>()
@@ -20,6 +24,13 @@ public class DamageLogger extends Module {
         .description("How to log the damage events")
         .defaultValue(logMode.NamesMethodDistance)
         .build());
+
+    private final Setting<Boolean> webhook = sgGeneral.add(new BoolSetting.Builder()
+        .name("Webhook")
+        .description("Send Alerts to Webhook.")
+        .defaultValue(false)
+        .build()
+    );
 
     private final Setting<attackMode> attackModeSetting = sgGeneral.add(new EnumSetting.Builder<attackMode>()
         .name("trigger-mode")
@@ -67,6 +78,14 @@ public class DamageLogger extends Module {
             case NamesDistance -> info(attackerName + " attacked " + targetName + " from " + attackDistance + " blocks away");
             case NamesMethodDistance -> info(attackerName + " attacked " + targetName + " via " + formattedAttackMethod + " from " + attackDistance + " blocks away");
         }
+        if (webhook.get()) {
+            if (webhookUrl == null) {
+                System.err.println("No webhook URL found! Set DISCORD_WEBHOOK_URL env variable.");
+                ChatUtils.sendMsg(Text.of("No webhook URL found! Set DISCORD_WEBHOOK_URL env variable."));
+                return;
+            } else Webhook.send(webhookUrl,attackerName + " attacked " + targetName + " via " + formattedAttackMethod + " from " + attackDistance + " blocks away");
+        }
+
     }
 
     public enum attackMode {

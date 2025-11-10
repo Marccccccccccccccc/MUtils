@@ -12,12 +12,22 @@ import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class ECUtils {
 
+    private static ECUtils instance;
+
     public ECUtils() {
         // Register this class to receive events
         EVENT_BUS.subscribe(this);
+        instance = this;
     }
 
-    private boolean isEnderChestOpen() {
+    public static ECUtils getInstance() {
+        if (instance == null) {
+            instance = new ECUtils();
+        }
+        return instance;
+    }
+
+    public boolean isEnderChestOpen() {
         return mc.player.currentScreenHandler instanceof GenericContainerScreenHandler handler
             && handler.getInventory() == mc.player.getEnderChestInventory();
     }

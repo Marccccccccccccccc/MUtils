@@ -1,6 +1,7 @@
 package marc3d.mutils.modules;
 
 import marc3d.mutils.MUtils;
+import marc3d.mutils.utils.Webhook;
 import meteordevelopment.meteorclient.events.world.BlockUpdateEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.settings.*;
@@ -9,6 +10,7 @@ import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +19,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.*;
 
 public class BlockBreakLogger extends Module {
+    String webhookUrl = System.getenv("DISCORD_WEBHOOK_URL");
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgDebug = settings.createGroup("Debug");
 
@@ -104,6 +107,13 @@ public class BlockBreakLogger extends Module {
         .description("Show what each player is looking at (periodic updates).")
         .defaultValue(false)
         .visible(() -> debugMode.get() && mode.get() == Mode.Raycast)
+        .build()
+    );
+
+    private final Setting<Boolean> webhook = sgGeneral.add(new BoolSetting.Builder()
+        .name("Webhook")
+        .description("Send Alerts to Webhook.")
+        .defaultValue(false)
         .build()
     );
 
@@ -235,13 +245,19 @@ public class BlockBreakLogger extends Module {
             }
 
             // Log to chat
-            if (logToChat.get()) {
-                ChatUtils.info(message.toString());
-            }
+            if (logToChat.get()) ChatUtils.info(message.toString());
+
 
             // Log to console
-            if (logToConsole.get()) {
-                info(message.toString());
+            if (logToConsole.get()) info(message.toString());
+
+            // Log to Webhook
+            if (webhook.get()) {
+                if (webhookUrl == null) {
+                    System.err.println("No webhook URL found! Set DISCORD_WEBHOOK_URL env variable.");
+                    ChatUtils.sendMsg(Text.of("No webhook URL found! Set DISCORD_WEBHOOK_URL env variable."));
+                    return;
+                } else Webhook.send(webhookUrl,message.toString());
             }
         }
     }
