@@ -17,9 +17,7 @@ public class SafeSpot {
     private static final Random random = new Random();
 
     /**
-     * Finds a safe spot around a BlockPos within interact range
-     * Returns the first safe spot found using randomized checking
-     *
+     * Finds a safe spot around a BlockPos within a specified range
      * @param center Center BlockPos to scan around
      * @return Vec3d of safe spot, or null if none found
      */
@@ -28,7 +26,6 @@ public class SafeSpot {
     }
 
     /**
-     * Finds a safe spot around a BlockPos within a spherical radius
      * Uses randomized checking to avoid repeatedly checking obstructed blocks
      *
      * @param center Center BlockPos to scan around

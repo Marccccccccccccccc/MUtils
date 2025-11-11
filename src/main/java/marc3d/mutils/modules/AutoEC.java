@@ -7,13 +7,19 @@ import marc3d.mutils.utils.SafeSpot;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.systems.modules.Module;
+import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import meteordevelopment.meteorclient.utils.world.BlockEntityIterator;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -61,15 +67,52 @@ public class AutoEC extends Module {
         if (!ECUtils.getInstance().isEnderChestOpen()) {
             List<EnderChestBlockEntity> enderChests = getAllEnderChestBLockEntity();
             sortByDistance(enderChests);
-            Movement.teleport(marc3d.mutils.utils.SafeSpot.findSafeSpot(
-                enderChests.get(0).getPos()),
-                true,
-                false
-                );
-            ChatUtils.sendMsg("AutoEC", Text.of(String.format("Tried teleporting to safespot %s around ec at %s",
-                SafeSpot.findSafeSpot(enderChests.get(0).getPos()),
-                enderChests.get(0).getPos())));
 
+            // Find first accessible enderchest
+            EnderChestBlockEntity validEnderChest = null;
+            Vec3d safeSpot = null;
+
+            for (int i = 0; i < enderChests.size(); i++) {
+                EnderChestBlockEntity ec = enderChests.get(i);
+                safeSpot = SafeSpot.findSafeSpot(ec.getPos());
+
+                if (safeSpot != null) {
+                    validEnderChest = ec;
+                    break;
+                } else {
+                    // Remove obstructed enderchest from list
+                    enderChests.remove(i);
+                    i--; // Adjust index after removal
+                    MeteorStarscript.ss.set("AutoECState", "Enderchest obstructed at " + ec.getPos());
+                }
+            }
+
+            if (validEnderChest == null || safeSpot == null) {
+                MeteorStarscript.ss.set("AutoECState", "No accessible enderchests found");
+                return;
+            }
+
+            Movement.teleport(safeSpot, true, false);
+            ChatUtils.sendMsg("AutoEC", Text.of(String.format("Tried teleporting to safespot %s around ec at %s",
+                safeSpot,
+                validEnderChest.getPos())));
+
+            // Open the enderchest
+            BlockPos chestPos = validEnderChest.getPos();
+            BlockHitResult hitResult = new BlockHitResult(
+                Vec3d.ofCenter(chestPos),
+                Direction.UP,
+                chestPos,
+                false
+            );
+
+            PlayerInteractBlockC2SPacket packet = new PlayerInteractBlockC2SPacket(
+                Hand.MAIN_HAND,
+                hitResult,
+                0
+            );
+
+            mc.getNetworkHandler().sendPacket(packet);
         }
     }
 }

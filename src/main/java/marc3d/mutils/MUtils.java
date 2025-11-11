@@ -55,8 +55,6 @@ public class MUtils extends MeteorAddon {
         /// TODO: Finish Forcecrawl (Water in head) + Block underneath you (Scaffold)
         /// TODO: ScaredyCatRewrite + Crawl holes
         /// TODO: Finish AutoTrial
-        /// TODO "Forke" e621 hud for any website eg botcontrol (;
-        /// TODO: Add cmd control somehow later
 
 
         // Commands
@@ -68,6 +66,7 @@ public class MUtils extends MeteorAddon {
 
         //SS
         MeteorStarscript.ss.set("ECOpen", "N/A");
+        MeteorStarscript.ss.set("AutoECState", "N/A");
 
         //Utils
         PlayerDataManager.load();
